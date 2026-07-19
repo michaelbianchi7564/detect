@@ -1,0 +1,83 @@
+run_name:
+input_dir: "DATA"
+output_dir: "results"
+
+species: "Escherichia_coli"
+
+reference_condition: "TREAT_D"
+reference:
+  genome: "genome.fna"
+  annotation: "annotation.gff"
+  annotation_tab: "annotation.gtf"
+
+direction:
+  - "_R1"
+  - "_R2"
+
+paired:
+  - "_p"
+  - "_u"
+
+threads:
+  fastqc: 2
+  fastp: 16
+  hisat2: 10
+  samtools_binary: 10
+  samtools_sort: 10
+  featureCounts: 8
+  deseq2: 8
+
+fastqc:
+  extra: ""
+
+fastp:
+  detect_adapter_for_pe: true
+  adapter_sequence: null
+  adapter_sequence_r2: null
+  adapter_fasta: null
+  trim_front1: 9
+  trim_front2: 9
+  trim_poly_g: true
+  trim_poly_x: true
+  length_required: 36
+  extra: ""
+
+index_building:
+  ss: false
+  exon: false
+  extra: ""
+
+hisat2:
+  preset: very-sensitive
+  dta: false
+  input_format: fastq
+  extra: ""
+
+samtools_binary:
+  extra: ""
+
+samtools_sort:
+  extra: ""
+
+samtools_index:
+  extra: ""
+
+featurecounts:
+  paired_end: true
+  strandedness: 2
+  feature_type: "gene"
+  attribute: "gene_id"
+  extra: "-M -O --fraction"
+
+de_analysis:
+  lfc_source: "raw"    # Alternatives: "raw" or "shrunk"
+  padj_cutoff: 0.05
+  lfc_cutoff: 1
+
+clustering:
+  threshold: 0.5              # from 0 to 1
+  cor_method: "spearman"      # "pearson", "spearman" or "kendall"
+  hclust_method: "ward.D2"    # "ward", "ward.D2", "complete", "average" (= UPGMA), "mcquitty" (= WPGMA), "median" (= WPGMC) or "centroid" (= UPGMC)
+  cut_method: "static"        # "static" is highly recommended, alternative: "dynamic"
+  k: 8
+  deepSplit: 2

@@ -1,0 +1,18 @@
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+
+dependencies:
+  - r-base
+  - r-yaml
+  - r-ggplot2
+  - bioconductor-deseq2
+  - bioconductor-biocparallel
+  - r-dplyr
+  - r-cli
+  - r-writexl
+  - r-dynamicTreeCut
+  - r-ashr
+  - r-pheatmap
+  - r-MASS
