@@ -1,6 +1,6 @@
 <div align="center">
 
-# DETECT
+# DETECT 🐍🧬
 
 ### **D**ifferential **E**xpression **T**ranscriptomic **E**valuation and **C**lustering **T**ool
 
