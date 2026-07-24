@@ -1,14 +1,9 @@
-# RICORDA DI CAMBIARE LA RULE ALL OGNI VOLTA CHE CAMBIA L'OUTPUT FINALE
-# RICORDA DI IMPOSTARE --RESOURCES PER LIMITARE IL NUMERO DI JOBS DURANTE LA QC_AFTER_TRIMMING
-# Per l'indicizzazione è preferibile usare files di riferimento per giunzioni ed esoni, che vanno estrapolati dal gtf. A sua volta il gtf va convertito dal gff, da cui vanno escluse le "?" dalla colonna strand (7)
-# Costruire l'indice per hisat2 prima di avviare l'analisi ed estrarre i gz (inserire passaggio se necessario), ma si può creare un smk che lancia un smk al suo interno?
 
 import os
 import sys
 
 from snakemake.io import glob_wildcards                                 # Import utility to extract wildcard values from file patterns
 from snakemake.shell import shell                                       # Import utility to use shell during hisat-building
-# INSERISCI IL FILE DI ANNOTAZIONE PER LA COSTRUZIONE DELL'INDICE (E IN CASO EXONS E SJ)
 
 CWD = os.getcwd()
 if CWD not in sys.path:
