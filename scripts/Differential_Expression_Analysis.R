@@ -349,17 +349,10 @@ for (comp_name in names(results_list)) {
 }
 
 # CLUSTERING -------------------------------------------------------------------
-
-gene_var <- rowVars(vsdata_matrix)    # compute gene variance
-threshold <- quantile(gene_var, config$clustering$threshold)    # Define threshold (quantile-based cutoff)
-
-# filter genes
-vsdata_filtered <- vsdata_matrix[gene_var > threshold,]
+vsdata_filtered <- vsdata_matrix[all_sig_genes,]
 
 # Logs
-cli_inform("Clustering genes retained: {nrow(vsdata_filtered)}")
-cli_inform("Clustering genes removed: {sum(gene_var <= threshold)}")
-cli_inform("Variance threshold used: {threshold}")
+cli_inform("Clustering on differentially expressed genes (DEGs): {nrow(vsdata_filtered)}")
 
 saveRDS(vsdata_filtered, paste0(output_dir, "rds_files/vsdata_filtered_clustering.rds"))
 check_output(paste0(output_dir, "rds_files/vsdata_filtered_clustering.rds"))
@@ -398,7 +391,7 @@ if (cut_method == "dynamic") {
   deepSplit <- config$clustering$deepSplit
   if (is.null(deepSplit)) deepSplit <- 2
   
-  clusters <- cutreeDynamic(dendro = as.dendrogram(cluster_gene),
+  clusters <- cutreeDynamic(dendro = cluster_gene,
                             distM = as.matrix(distance_gene),
                             deepSplit = deepSplit)
 } else {
