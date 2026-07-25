@@ -281,10 +281,12 @@ If you encounter any issues, broken links, or bugs while running **DETECT**, ple
 *Note: Benchmark download scripts are currently undergoing maintenance for updated dataset URLs and will be updated in upcoming releases*
 
 ## 11. 📜 LICENSE & CITATION
-### Legal Deposit & Licencing
-This pipeline code and its automated infrastructure are deposited and archived under the **MIT License**. You are free to modify, distribute, and implement this pipeline in private or commercial settings, provided the original copyright notice and permission notice are included. See the `LICENSE`file in the root repository for full details.
+### Legal Deposit & Licensing
+This pipeline code and its automated infrastructure are deposited and archived under the **GNU General Public License v3.0 (GPLv3)**. You are free to run, study, share, and modify this pipeline for research and open-source use, provided that any derivative work preserves the original copyright notice and is distributed under the same GPLv3 licence. See the `LICENSE` file in the root repository for full details.
+
+For proprietary, closed-source, or commercial enterprise licensing options, please contact the creator & maintainer directly at: `michael.bianchi@unitus.it`
 
 ### Citation
 If you use this pipeline architecture, automated wrapper script, or downstream DESeq2 components in your publication or research project, please cite this repository:
 
-*M. Bianchi (2026). Automated and Isolated End-to-End RNA-seq Pipeline using Snakemake and DESeq2. GitHub Repository: (https://github.com/michaelbianchi7564/detect)
+* **Bianchi, M.** (2026). *DETECT: Automated and Isolated End-to-End RNA-seq Pipeline using Snakemake and DESeq2*. GitHub Repository: [https://github.com/michaelbianchi7564/detect](https://github.com/michaelbianchi7564/detect)
