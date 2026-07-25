@@ -1,83 +1,118 @@
-run_name:
-input_dir: "DATA"
-output_dir: "results"
+#################################################################################
+# DETECT - Differential Expression Transcriptomic Evaluation and Clustering Tool
+# Version: 1.0.0
+# Description: Execution parameters
+#################################################################################
 
-species: "Escherichia_coli"
+# -------------------------------------------------------------------------------
+# General Run Settings
+# -------------------------------------------------------------------------------
+run_name:                             # Optional run identifier
+input_dir: "DATA"                     # Directory containing raw FASTQ input files
+output_dir: "results"                 # Main output directory
 
-reference_condition: "TREAT_D"
+species: "Escherichia_coli"           # Target species name, required for downstream analysis
+
+reference_condition: "TREAT_D"        # Control condition used as a reference in Differential Expression contrasts
+
+# -------------------------------------------------------------------------------
+#Reference Genome and Annotation
+# -------------------------------------------------------------------------------
 reference:
-  genome: "genome.fna"
-  annotation: "annotation.gff"
-  annotation_tab: "annotation.gtf"
+  genome: "genome.fna"                # FASTA file containing reference genome sequences
+  annotation: "annotation.gff"        # GFF/GFF3 annotation file
+  annotation_tab: "annotation.gtf"    # GTF annotation file
 
+# -------------------------------------------------------------------------------
+#Read & Pairing Naming Conventions
+# -------------------------------------------------------------------------------
 direction:
-  - "_R1"
-  - "_R2"
+  - "_R1"                             # Forward read filenames suffix
+  - "_R2"                             # Reverse read filenames suffix
 
 paired:
-  - "_p"
-  - "_u"
+  - "_p"                              # Suffix for paired output reads
+  - "_u"                              # Suffix for unpaired output reads
 
+# -------------------------------------------------------------------------------
+# Thread Allocation
+# -------------------------------------------------------------------------------
 threads:
-  fastqc: 2
-  fastp: 16
-  hisat2: 10
-  samtools_binary: 10
-  samtools_sort: 10
-  featureCounts: 8
-  deseq2: 8
+  fastqc: 2                           # Threads for Quality Control (FastQC)
+  fastp: 16                           # Threads for Read Trimming & Filtering (fastp)
+  hisat2: 10                          # Threads for Genome Alignment (HISAT2)
+  samtools_binary: 10                 # Threads for BAM Conversion (samtools view)
+  samtools_sort: 10                   # Threads for BAM sorting (samtools sort)
+  featureCounts: 8                    # Threads for Quantification (featureCounts)
+  deseq2: 8                           # Threads for Differential Expression Analysis (DESeq2)
 
+# ------------------------------------------------------------------------------
+# Tool Parameters
+# ------------------------------------------------------------------------------
+
+# FastQC Settings
 fastqc:
-  extra: ""
+  extra: ""                           # Additional command-line flags for FastQC
 
+# fastp Settings
 fastp:
-  detect_adapter_for_pe: true
-  adapter_sequence: null
-  adapter_sequence_r2: null
-  adapter_fasta: null
-  trim_front1: 9
-  trim_front2: 9
-  trim_poly_g: true
-  trim_poly_x: true
-  length_required: 36
-  extra: ""
+  detect_adapter_for_pe: true         # Automatic detection of adapter sequences in paired-end data
+  adapter_sequence: null              # Adapter sequence for R1 (null = default / auto-detect)
+  adapter_sequence_r2: null           # Adapter sequence for R2 (null = default / auto-detect)
+  adapter_fasta: null                 # Path to custom adapter FASTA file if available
+  trim_front1: 9                      # Number of bases to trim from 5' end of R1
+  trim_front2: 9                      # Number of bases to trim from r' end of R2
+  trim_poly_g: false                  # Enable PolyG tail trimming
+  trim_poly_x: true                   # Enable PolyX tail trimming
+  length_required: 36                 # Minimum read length required to keep reads after trimming
+  extra: ""                           # Additional command-line flags for fastp
 
+# HISAT2 Indexing Options
 index_building:
-  ss: false
-  exon: false
-  extra: ""
+  ss: false                           # Extract splise sites during index creation (true for eukaryotic genomes with introns)
+  exon: false                         # Extract exons during index creation (true for eukaryotic genomes iwth introns)
+  extra: ""                           # Additional command-line flags for hisat2-build
 
+# HISAT2 Alignment Settings
 hisat2:
-  preset: very-sensitive
-  dta: false
-  input_format: fastq
-  extra: ""
+  preset: very-sensitive              # Alignment sensitivity preset ("sensitive", "very-sensitive", "fast")
+  dta: false                          # Tailor alignments for downstream transcript assembly
+  input_format: fastq                 # Input sequence format
+  extra: ""                           # Additional command-line flags for HISAT2
 
+# Samtools processing
 samtools_binary:
-  extra: ""
+  extra: ""                           # Additional command-line flags for SAM to BAM conversion
 
 samtools_sort:
-  extra: ""
+  extra: ""                           # Additional command-line flags for BAM coordinate sorting
 
 samtools_index:
-  extra: ""
+  extra: ""                           # Additional parameters for BAM indexing
 
+# featureCounts Settings
 featurecounts:
-  paired_end: true
-  strandedness: 2
-  feature_type: "gene"
-  attribute: "gene_id"
-  extra: "-M -O --fraction"
+  paired_end: true                    # Set to true for paired-end sequencing data
+  strandedness: 2                     # Strand specificity: 0 (unstranded), 1 (stranded), 2 (reversely stranded)
+  feature_type: "gene"                # Feature type in GTF annotation
+  attribute: "gene_id"                # Meta-feature attribute in GTF annotation for grouping read counts
+  extra: "-M -O --fraction"           # Additional command-line flags for Quantification (multi-mapping (-M), overlapping (-O), fractional counting (--fraction)
 
+# ------------------------------------------------------------------------------
+# Differential Expression analysis Settings (DESeq2)
+# ------------------------------------------------------------------------------
 de_analysis:
-  lfc_source: "raw"    # Alternatives: "raw" or "shrunk"
-  padj_cutoff: 0.05
-  lfc_cutoff: 1
+  lfc_source: "raw"                   # Alternatives: "raw" or "shrunk" (apeglm/normal)
+  padj_cutoff: 0.05                   # Adjusted p-value (FDR) significance threshold
+  lfc_cutoff: 1                       # Absolute Log2 Fold Change threshold (|log2FC| >= 1 equivalent to 2-fold change)
 
+# ------------------------------------------------------------------------------
+# Gene Expression Clustering Settings
+# ------------------------------------------------------------------------------
 clustering:
-  threshold: 0.5              # from 0 to 1
-  cor_method: "spearman"      # "pearson", "spearman" or "kendall"
-  hclust_method: "ward.D2"    # "ward", "ward.D2", "complete", "average" (= UPGMA), "mcquitty" (= WPGMA), "median" (= WPGMC) or "centroid" (= UPGMC)
-  cut_method: "static"        # "static" is highly recommended, alternative: "dynamic"
-  k: 8
-  deepSplit: 2
+  threshold: 0.5              # Dynamic tree cut threshold range (from 0 to 1)
+  cor_method: "spearman"      # Correlation coefficient method: "pearson", "spearman" or "kendall"
+  hclust_method: "ward.D2"    # Clustering method: "ward", "ward.D2", "complete", "average" (= UPGMA), "mcquitty" (= WPGMA), "median" (= WPGMC) or "centroid" (= UPGMC)
+  cut_method: "static"        # Tree cutting method: "static" (fixed height/k) is highly recommended, alternative: "dynamic" (dynamic tree cut)
+  k: 8                        # Fixed number of clusters (k) for static tree cutting
+  deepSplit: 2                # Sensitivity parameter for dynamic tree cutting (0 to 4)
