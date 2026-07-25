@@ -1,6 +1,6 @@
 <div align="center">
 
-# DETECT 🐍🧬
+# 🧬🐍 DETECT 🐍🧬
 
 ### **D**ifferential **E**xpression **T**ranscriptomic **E**valuation and **C**lustering **T**ool
 
@@ -14,7 +14,7 @@ A scalable, reproducible **Snakemake pipeline** for genome-referenced differenti
 </div>
 
 ---
-## 1. OVERVIEW
+## 1. 🧬 OVERVIEW
 
 This repository contains a fully automated, end-to-end, and highly reproducible **RNA-seq pipeline** built using **Snakemake**, **Conda**, and **R**.
 
@@ -48,7 +48,7 @@ This workflow integrates widely used bioinformatics tools into a single reproduc
 * **Inputs:** Raw paired-end or single-end `FASTQ` files, a sample `metadata.csv`, a `config.yaml`, and reference genomes files (`FASTA` / `GTF` / `GFF`).
 * **Outputs:** Results in `XLSX`and `CSV`tables for differential expressions, detailed `PDF` plots for visual inspection, and R objects (`.rds`) to allow immediate downstream customization in R.
 
-## 2. REQUIREMENTS
+## 2. 📋 REQUIREMENTS
 
 Before installing and running the pipeline, ensure your system meets the following prerequisites:
 
@@ -65,7 +65,7 @@ The underlying bioinformatic binaries (such as `HISAT2`, `SamTools`, and `Subrea
 ### Software Requirements
 * **Miniconda:** A working installation of Miniconda (or Anaconda) is required to manage and build the workflow's isolated software environments.
 
-## 3. REFERENCE GENOME PREPARATION
+## 3. 🧬 REFERENCE GENOME PREPARATION
 
 Before launching a new run, you must manually place your reference sequence and annotation files into the  folder `reference_genomes/`. To ensure a correct integration with the alignment and quantification rules, follow this mandatory naming convention:
 1. **Reference Genome:** Save the genomic assembly file in FASTA format as `genome.fna`.
@@ -78,7 +78,7 @@ reference_genomes/
 ├── annotation.gff
 └── annotation.gtf
 
-## 4. QUICK START
+## 4. 🚀 QUICK START
 
 To give both quick environment verification and full biological validation, the repository provides two distinct testing tiers located in the `tests/`directory.
 
@@ -128,7 +128,7 @@ The execution will take approximately 2 or 3 hours to complete, depending on you
 ls -lh runs/E_coli_benchmark/results/
 ```
 
-## 5. REPOSITORY ARCHITECTURE
+## 5. 📁  REPOSITORY ARCHITECTURE
 
 The structure of this repository is projected to maintain a strict separation between pipeline logic, configuration parameters, and run-specific execution data. This layout allows the pipeline to be portable and easy adaptable to new datasets.
 
@@ -168,7 +168,7 @@ The structure of this repository is projected to maintain a strict separation be
 * `config/config.yaml`: Contains global configuration (e.g. reference genome, software flags, and tool parameters). It is designed to avoid harcoding of settings inside the rules.
 * `runs/`: Every test, benchmark, or project runs inside its own subdirectory under `runs/`. This prevents data clashing and guarantee that root repository remains clean. Each run directory carries its own `DATA/`, `REF/`, and `metadata.tsv` files. 
 
-## 6. CONFIGURATION & METADATA
+## 6. ⚙️ CONFIGURATION & METADATA
 
 To run the pipeline on your biological dataset, you only need to configure two files within your run directory (e.g. `runs/your_experiment/`): the sample metadata file (`metadata.tsv`) and the run-specific configuration file (`config.yaml`).
 
@@ -214,7 +214,7 @@ reference:
   genome: "REF/your_genome.fna"
   annotation_tab: "REF/your_annotation.gtf"
 ```
-## 7. PIPELINE EXECUTION MODE
+## 7. ⚡ PIPELINE EXECUTION MODE
 
 The execution of the pipeline is standardized through the wrapper script `run_pipeline.sh`. This script manages environment initialization and automated parameter passing to Snakemake.
 
@@ -231,7 +231,7 @@ To launch the actual computation:
 ./run_pipeline.sh <run_name> <cores>
 ```
 
-## 8. DETAILED OUTPUT ARCHITECTURE
+## 8. 📊 DETAILED OUTPUT ARCHITECTURE
 
 At the end of the execution, all processed files are structured inside your dedicated run directory.
 
@@ -261,7 +261,7 @@ runs/your_run_name/results/
         ├── heatmap_samples_vst.pdf  # VST profile heatmap of DEGs
         └── heatmap_conditions_log2FC.pdf  # Expression profile heatmap of DEGs
 
-## 9. TROUBLESHOOTING NOTES
+## 9. 🔧 TROUBLESHOOTING NOTES
 
 ### A. Automatic Dot Rectification
 During data acquisition, the R's native `read.delim` automatically converts non-standard characters (e.g., `/`) with dots (`.`) in column names. The script `scripts/Differential_Expression_Analysis.R` handels this behaviour by matching the converted column names using regular expressions. 
@@ -273,11 +273,18 @@ colnames(counts) <- sub(correct_pattern, "\\1", colnames(counts))
 
 This guarantees that column identification perfectly matches your `metadata.tsv`sample list.
 
-10. LICENSE & CITATION
+## 10. 💬 SUPPORT & CONTACT
+If you encounter any issues, broken links, or bugs while running **DETECT**, please feel free to:
+* Open an **[issue](http://github.com/michaelbianchi7564/detect/issues)** directly on this repository
+* Contact me at: `michael.bianchi@unitus.it`
+
+*Note: Benchmark download scripts are currently undergoing maintenance for updated dataset URLs and will be updated in upcoming releases*
+
+## 11. 📜 LICENSE & CITATION
 ### Legal Deposit & Licencing
 This pipeline code and its automated infrastructure are deposited and archived under the **MIT License**. You are free to modify, distribute, and implement this pipeline in private or commercial settings, provided the original copyright notice and permission notice are included. See the `LICENSE`file in the root repository for full details.
 
 ### Citation
 If you use this pipeline architecture, automated wrapper script, or downstream DESeq2 components in your publication or research project, please cite this repository:
 
-*M. Bianchi (2026). Automated and Isolated End-to-End RNA-seq Pipeline using Snakemake and DESeq2. GitHub Repository: 
+*M. Bianchi (2026). Automated and Isolated End-to-End RNA-seq Pipeline using Snakemake and DESeq2. GitHub Repository: (https://github.com/michaelbianchi7564/detect)
