@@ -1,0 +1,17 @@
+cff-version: 1.0.0
+message: "If you use this software, please cite it as below."
+
+type: software
+
+title: "DETECT. Differential Expression Transcriptomic Evaluation and Clustering Tool"
+version: "1.0"
+data-released: 2026-07-25
+
+author:
+  - family-names: "Bianchi"
+    given-names: "Michael"
+    orcid: "https://orcid.org/0009-0000-4074-4141"
+
+repository-code: "https://github.com/michaelbianchi7564/detect"
+
+license: "GPL-3.0"
