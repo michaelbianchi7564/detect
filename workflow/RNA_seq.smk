@@ -33,8 +33,8 @@ OUTPUT_DIR = f"{RUN_DIR}/{config['output_dir']}"
 DIFF_EXPR_DIR = f"{OUTPUT_DIR}/DIFF_EXPR"
 REFERENCE_DIR = f"reference_genomes/{config['species']}"
 
-SAMPLES_R1 = set(glob_wildcards(f"{INPUT_DIR}/{{sample}}_R1.fastq.gz").sample)    # Detect sample IDs from R1 reads FASTQ files in DATA/
-SAMPLES_R2 = set(glob_wildcards(f"{INPUT_DIR}/{{sample}}_R2.fastq.gz").sample)    # Detect sample IDs from R2 reads FASTQ files in DATA/
+SAMPLES_R1 = set(glob_wildcards(f"{INPUT_DIR}/{{sample}}_R1.fq.gz").sample)    # Detect sample IDs from R1 reads FASTQ files in DATA/
+SAMPLES_R2 = set(glob_wildcards(f"{INPUT_DIR}/{{sample}}_R2.fq.gz").sample)    # Detect sample IDs from R2 reads FASTQ files in DATA/
 SAMPLES = sorted(SAMPLES_R1 & SAMPLES_R2)                               # Keep only samples that have both R1 and R2 files and sort them
 
 print(f"Detected {len(SAMPLES)} paired-end samples: {', '.join(SAMPLES)}")      # Print the number of samples detected
@@ -56,8 +56,8 @@ rule all:
 
 rule quality_check:
     input:
-        R1 = f"{INPUT_DIR}/{{sample}}_R1.fastq.gz",
-        R2 = f"{INPUT_DIR}/{{sample}}_R2.fastq.gz",
+        R1 = f"{INPUT_DIR}/{{sample}}_R1.fq.gz",
+        R2 = f"{INPUT_DIR}/{{sample}}_R2.fq.gz",
     output:
         R1 = f"{OUTPUT_DIR}/QC/{{sample}}_R1_fastqc.html",
         R2 = f"{OUTPUT_DIR}/QC/{{sample}}_R2_fastqc.html",
@@ -75,8 +75,8 @@ rule quality_check:
 
 rule trimming:
     input:
-        R1 = f"{INPUT_DIR}/{{sample}}_R1.fastq.gz",
-        R2 = f"{INPUT_DIR}/{{sample}}_R2.fastq.gz",
+        R1 = f"{INPUT_DIR}/{{sample}}_R1.fq.gz",
+        R2 = f"{INPUT_DIR}/{{sample}}_R2.fq.gz",
     output:
         R1P = f"{OUTPUT_DIR}/TRIMMING/{{sample}}_R1_p.fastq",
         R2P = f"{OUTPUT_DIR}/TRIMMING/{{sample}}_R2_p.fastq",
@@ -208,7 +208,7 @@ rule quantification:
     shell:
         """
         mkdir -p {OUTPUT_DIR}/QUANTIFICATION/
-        featureCounts -p -T {threads} -a {input.ANNOTATION} -o {output.COUNT_MATRIX} {input.SORTED} {params.featurecounts_params}
+        featureCounts -p -T {threads} -a {input.ANNOTATION} -o {output.COUNT_MATRIX} {input.SORTED} {params.featurecounts_params} 2> {OUTPUT_DIR}/QUANTIFICATION/featureCounts.log
         """
 
 rule differential_exp:
