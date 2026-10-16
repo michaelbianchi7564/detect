@@ -5,8 +5,8 @@
 ### **D**ifferential **E**xpression **T**ranscriptomic **E**valuation and **C**lustering **T**ool
 
 [![Workflow: Snakemake](https://img.shields.io/badge/Workflow-Snakemake-emerald?style=flat-square)](https://snakemake.github.io)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/Version-v1.0.0-green?style=flat-square)](https://github.com/michaelbianchi7564/detect)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg?style=flat-square)](https://www.gnu.org/licenses/agpl-3.0)
+[![Version](https://img.shields.io/badge/Version-v1.1.0-green?style=flat-square)](https://github.com/michaelbianchi7564/detect)
 ---
 
 A scalable, reproducible **Snakemake pipeline** for genome-referenced differential expression analysis, unsupervised clustering, and automated heatmap generation.
@@ -276,15 +276,20 @@ This guarantees that column identification perfectly matches your `metadata.tsv`
 ## 10. 💬 SUPPORT & CONTACT
 If you encounter any issues, broken links, or bugs while running **DETECT**, please feel free to:
 * Open an **[issue](http://github.com/michaelbianchi7564/detect/issues)** directly on this repository
-* Contact me at: `michael.bianchi@unitus.it`
+* Contact me at: `bianchi1994@libero.it` or `bianchimichael1994@gmail.com`
 
 *Note: Benchmark download scripts are currently undergoing maintenance for updated dataset URLs and will be updated in upcoming releases*
 
 ## 11. 📜 LICENSE & CITATION
-### Legal Deposit & Licensing
-This pipeline code and its automated infrastructure are deposited and archived under the **GNU General Public License v3.0 (GPLv3)**. You are free to run, study, share, and modify this pipeline for research and open-source use, provided that any derivative work preserves the original copyright notice and is distributed under the same GPLv3 licence. See the `LICENSE` file in the root repository for full details.
+### Copyright & Dual-Licensing Model
+**Copyright (c) 2026 Michael Bianchi** (`bianchi1994@libero.it`)
 
-For proprietary, closed-source, or commercial enterprise licensing options, please contact the creator & maintainer directly at: `michael.bianchi@unitus.it`
+Detect is a dual-licensed to accomodate both academic/open-source research and commercial enterprise applications:
+
+1. **Academic & Non-Commercial Use:** Released under the **[GNU Affero General Public License v3.0 (AGPLv3)](LICENSE)**. You are free to run, study, share, and modify this pipeline for research purposes. Any derivative work or network-accessible service using modified code must make its source code available under AGPLv3.
+2. **Commercial & Enterprise Use:** Requires a **Commercial License** to exempt your organization from AGPLv3 copyleft and network source-sharing obligations.
+
+For commercial licensing terms, annual/monthly subscription plans, pilot runs, or enterprise consulting, contact: **`bianchi1994@libero.it`**
 
 ### Citation
 If you use this pipeline architecture, automated wrapper script, or downstream DESeq2 components in your publication or research project, please cite this repository:
