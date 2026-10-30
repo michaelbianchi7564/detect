@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec(v2.0.0
 - **Repository Metadata:** Updated `README.md` and `CITATION.cff` to reflect the personal IP authorship, personal contact channels, and AGPLv3/Commercial dual-licensing structure.
 
 ### Fixed
-- **Log Direction:** Corrected `featureCounts` shell execution logic to properly capture execution logs (`2> featureCounts.log`)
+- **Pipeline Execution Lock:** Resolved Snakemake execution locking behavior to ensure recovery and prevent file locks after interrupted runs.
 
 ---
 

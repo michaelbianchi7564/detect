@@ -1,12 +1,36 @@
 #!/bin/bash
 
-# Esci immediatamente se un comando fallisce
 set -e
+# ============================================================================================
+# INTRO
+# ============================================================================================
+show_banner() {
+	echo -e "\033[0;36m"
+
+	cat << 'EOF'
+========================================================================
+  ____  _____ _____ _____ ____ _____ 
+ |  _ \| ____|_   _| ____/ ___|_   _|
+ | | | |  _|   | | |  _|| |     | |  
+ | |_| | |___  | | | |__| |___  | |  
+ |____/|_____| |_| |_____\____| |_|  
+
+ DETECT: Differential Expression & Transcriptomic Analysis Pipeline
+ Version:  v1.0.0
+ Author:   Michael Bianchi
+ GitHub:   https://github.com/michaelbianchi7564/detect
+========================================================================
+EOF
+	
+	echo -e '\033[0m'
+}
+
+show_banner
 
 PROJECT_ROOT="$(cd "$(dirname "$0")" && pwd)"
 cd "$PROJECT_ROOT"
 
-# 1. Controlla che sia stato passato almeno il nome della run
+# 1. Check if at least run name is provided
 if [ -z "$1" ]; then
     echo "Usage: ./run_pipeline.sh <run_name> [cores]"
     echo "Example: ./run_pipeline.sh E_coli_test 8"
@@ -14,9 +38,9 @@ if [ -z "$1" ]; then
 fi
 
 RUN=$1
-CORES=${2:-4}  # Usa il secondo argomento, altrimenti usa 4 core di default
+CORES=${2:-4}  # Use the second arg, or use 4 cores by default
 
-# 2. Verifica che esista il file di configurazione specifico per questa esecuzione
+# 2. Check if a specific config file exists
 LOCAL_CONFIG="runs/${RUN}/config.yaml"
 if [ ! -f "$LOCAL_CONFIG" ]; then
     echo "ERROR: Configuration file not found at: $LOCAL_CONFIG"
@@ -27,19 +51,41 @@ if [ ! -f "$LOCAL_CONFIG" ]; then
     exit 1
 fi
 
-# 3. Crea in anticipo la cartella dei risultati (se non esiste) e fai il backup del config
-# In questo modo i risultati conterranno per sempre i parametri esatti di questo specifico run
+# 3. Early create a results folder (if doesn't exist) and a backup of the config file
 RESULTS_DIR="runs/${RUN}/results"
 mkdir -p "$RESULTS_DIR"
 cp "$LOCAL_CONFIG" "$RESULTS_DIR/run_config_backup.yaml"
 echo "INFO: Config file backed up to $RESULTS_DIR/run_config_backup.yaml"
 
-# 4. Lancia Snakemake combinando il config globale (default) e quello locale (specifico)
-echo "=== Starting Snakemake for run: ${RUN} using ${CORES} cores ==="
-snakemake \
-    -s workflow/RNA_seq.smk \
-    --configfile config/config.yaml \
-    --configfile "$LOCAL_CONFIG" \
-    --config run_name="${RUN}" \
-    --cores "$CORES" \
-    --use-conda
+# 4. Run snakemake combining global and local config files
+SNAKE_ARGS=(
+	-s workflow/RNA_seq.smk
+	--configfile config/config.yaml
+	--configfile "$LOCAL_CONFIG"
+	--config run_name="${RUN}"
+)
+
+LOG_FILE="$(mktemp)"
+trap 'rm -f "$LOG_FILE"' EXIT
+
+run_snakemake() {
+	snakemake "${SNAKE_ARGS[@]}" \
+		--cores "$CORES" \
+		--use-conda \
+		--rerun-incomplete 2>&1 | tee "$LOG_FILE"
+	return "$PIPESTATUS[0]}"
+}
+
+echo "=== Checking directory locks for run: ${RUN} ==="
+
+if ! run_snakemake; then
+	if grep -qE "Directory cannot be locked|LockException" "$LOG_FILE"; then
+		echo "WARNING: Directory locked (presumable previous interruption). Running --unlock..."
+		snakemake "${SNAKE_ARGS[@]}" --unlock
+		echo "-- Unlock Complete, rerunning pipeline ---"
+		run_snakemake
+	else
+		echo "Error: Snakemake failed for different reason then lock"
+		exit 1
+	fi
+fi
