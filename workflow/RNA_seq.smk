@@ -37,7 +37,7 @@ SAMPLES_R1 = set(glob_wildcards(f"{INPUT_DIR}/{{sample}}_R1.fq.gz").sample)    #
 SAMPLES_R2 = set(glob_wildcards(f"{INPUT_DIR}/{{sample}}_R2.fq.gz").sample)    # Detect sample IDs from R2 reads FASTQ files in DATA/
 SAMPLES = sorted(SAMPLES_R1 & SAMPLES_R2)                               # Keep only samples that have both R1 and R2 files and sort them
 
-print(f"Detected {len(SAMPLES)} paired-end samples: {', '.join(SAMPLES)}")      # Print the number of samples detected
+print(f"Detected {len(SAMPLES)} paired-end samples: {', '.join(SAMPLES)}", file=sys.stderr)      # Print the number of samples detected
 
 if not SAMPLES:
     raise ValueError(f"No paired-end samples found in {INPUT_DIR}/")            # Stop execution if no samples are found
@@ -52,7 +52,8 @@ rule all:
         f"{DIFF_EXPR_DIR}/tables/significative_genes.xlsx",
         f"{DIFF_EXPR_DIR}/tables/log2FC_matrix.csv",
         f"{DIFF_EXPR_DIR}/tables/vsdata_matrix.csv",
-        f"{DIFF_EXPR_DIR}/tables/cluster_assignment.csv"
+        f"{DIFF_EXPR_DIR}/tables/cluster_assignment.csv",
+        f"{OUTPUT_DIR}/MULTIQC_REPORT/multiqc_report.html"
 
 rule quality_check:
     input:
@@ -232,3 +233,17 @@ rule differential_exp:
         Rscript scripts/Differential_Expression_Analysis.R {input.COUNTS} {input.METADATA} {input.CONFIG}
         """
 
+rule multiqc:
+    input:
+        FASTQC = expand(f"{OUTPUT_DIR}/QC/{{sample}}_R{{r}}_fastqc.html", sample = SAMPLES, r = [1,2]),
+        PICARD = expand(f"{OUTPUT_DIR}/ALIGNMENT/QC_PICARD/{{sample}}.metrics", sample = SAMPLES),
+        COUNTS = f"{OUTPUT_DIR}/QUANTIFICATION/counts.txt",
+    output:
+        REPORT = f"{OUTPUT_DIR}/MULTIQC_REPORT/multiqc_report.html"
+    conda:
+        "envs/multiqc.yaml"
+    shell:
+        """
+        mkdir -p {OUTPUT_DIR}/MULTIQC_REPORT/
+        multiqc {input} -o {OUTPUT_DIR}/MULTIQC_REPORT/ -n multiqc_report.html --force
+        """
