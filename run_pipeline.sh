@@ -51,6 +51,13 @@ if [ ! -f "$LOCAL_CONFIG" ]; then
     exit 1
 fi
 
+# Check the match between run_name in the local config and the run folder
+CONFIG_RUN_NAME=$(grep -E '^run_name:' "$LOCAL_CONFIG" | sed -E 's/^run_name:[[:space:]]*"?([^"# ]*)"?.*/\1/')
+if [ -n "$CONFIG_RUN_NAME" ] && [ "$CONFIG_RUN_NAME" != "$RUN" ]; then
+	echo "ERROR: run_name in $LOCAL_CONFIG ('$CONFIG_RUN_NAME') does not match the run folder ('$RUN')."
+	exit 1
+fi
+
 # 3. Early create a results folder (if doesn't exist) and a backup of the config file
 RESULTS_DIR="runs/${RUN}/results"
 mkdir -p "$RESULTS_DIR"
@@ -73,7 +80,7 @@ run_snakemake() {
 		--cores "$CORES" \
 		--use-conda \
 		--rerun-incomplete 2>&1 | tee "$LOG_FILE"
-	return "$PIPESTATUS[0]}"
+	return "${PIPESTATUS[0]}"
 }
 
 echo "=== Checking directory locks for run: ${RUN} ==="
