@@ -116,3 +116,9 @@ clustering:
   cut_method: "static"        # Tree cutting method: "static" (fixed height/k) is highly recommended, alternative: "dynamic" (dynamic tree cut)
   k: 8                        # Fixed number of clusters (k) for static tree cutting
   deepSplit: 2                # Sensitivity parameter for dynamic tree cutting (0 to 4)
+
+  # ----------------------------------------------------------------------------
+  # MultiQC report
+  # ----------------------------------------------------------------------------
+multiqc:
+  extra ""                    # Additional command-line flags for multiqc
