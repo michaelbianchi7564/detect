@@ -93,7 +93,7 @@ samtools_index:
 # featureCounts Settings
 featurecounts:
   paired_end: true                    # Set to true for paired-end sequencing data
-  strandedness: 2                     # Strand specificity: 0 (unstranded), 1 (stranded), 2 (reversely stranded)
+  strandness: 0                     # Strand specificity: 0 (unstranded), 1 (stranded), 2 (reversely stranded)
   feature_type: "gene"                # Feature type in GTF annotation
   attribute: "gene_id"                # Meta-feature attribute in GTF annotation for grouping read counts
   extra: "-M -O --fraction"           # Additional command-line flags for Quantification (multi-mapping (-M), overlapping (-O), fractional counting (--fraction)
