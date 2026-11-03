@@ -209,7 +209,7 @@ rule quantification:
     shell:
         """
         mkdir -p {OUTPUT_DIR}/QUANTIFICATION/
-        featureCounts -p -T {threads} -a {input.ANNOTATION} -o {output.COUNT_MATRIX} {input.SORTED} {params.featurecounts_params} 2> {OUTPUT_DIR}/QUANTIFICATION/featureCounts.log
+        featureCounts -T {threads} -a {input.ANNOTATION} -o {output.COUNT_MATRIX} {input.SORTED} {params.featurecounts_params} 2> {OUTPUT_DIR}/QUANTIFICATION/featureCounts.log
         """
 
 rule differential_exp:
@@ -230,7 +230,7 @@ rule differential_exp:
     shell:
         """
         mkdir -p {DIFF_EXPR_DIR}/tables {DIFF_EXPR_DIR}/genes {DIFF_EXPR_DIR}/plots/volcano_plots {DIFF_EXPR_DIR}/debug {DIFF_EXPR_DIR}/rds_files
-        Rscript scripts/Differential_Expression_Analysis.R {input.COUNTS} {input.METADATA} {input.CONFIG}
+        THREADS={threads} Rscript scripts/Differential_Expression_Analysis.R {input.COUNTS} {input.METADATA} {input.CONFIG}
         """
 
 rule multiqc:
