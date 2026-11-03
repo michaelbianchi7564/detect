@@ -17,6 +17,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec(v2.0.0
 - **Metrics Integration:** Picard `CollectRnaSeqMetrics` integration (`v1.2.0`).
 
 ---
+## [1.1.1] 2026-10-
+
+### Fixed
+- **featureCounts Paired-End Handling:** Removed redundant hard-coded paired-end flags to ensure clean and correct argument generation directly from the configuration file.
+
+---
 
 ## [1.1.0] 2026-10-16
 
