@@ -7,7 +7,7 @@
 # -------------------------------------------------------------------------------
 # General Run Settings
 # -------------------------------------------------------------------------------
-run_name:                             # Optional run identifier
+run_name:                             # Mandatory run identifier
 input_dir: "DATA"                     # Directory containing raw FASTQ input files
 output_dir: "results"                 # Main output directory
 
