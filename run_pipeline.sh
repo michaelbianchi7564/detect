@@ -53,7 +53,13 @@ fi
 
 # Check the match between run_name in the local config and the run folder
 CONFIG_RUN_NAME=$(grep -E '^run_name:' "$LOCAL_CONFIG" | sed -E 's/^run_name:[[:space:]]*"?([^"# ]*)"?.*/\1/')
-if [ -n "$CONFIG_RUN_NAME" ] && [ "$CONFIG_RUN_NAME" != "$RUN" ]; then
+if [ -z "$CONFIG_RUN_NAME" ]; then
+    echo "ERROR: run_name is empty or missing in $LOCAL_CONFIG."
+    echo "Fix: set it to the run folder name, e.g.:"
+    echo "sed -i 's/^run_name:.*/run_name: \"${RUN}\"/' $LOCAL_CONFIG"
+    exit 1
+fi
+if [ "$CONFIG_RUN_NAME" != "$RUN" ]; then
 	echo "ERROR: run_name in $LOCAL_CONFIG ('$CONFIG_RUN_NAME') does not match the run folder ('$RUN')."
 	exit 1
 fi

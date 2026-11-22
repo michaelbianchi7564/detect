@@ -17,11 +17,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec(v2.0.0
 - **Metrics Integration:** Picard `CollectRnaSeqMetrics` integration (`v1.2.0`).
 
 ---
-## [1.1.1] 2026-10-??
+## [1.1.1] 2026-11-22
 
 ### Fixed
 - **featureCounts Paired-End Handling:** Removed redundant hard-coded paired-end flags to ensure clean and correct argument generation directly from the configuration file.
 - **DESeq2 Multithreading:** Explicitly passed configured thread counts to the `differential_exp` execution environment, enabling parallel processing in DESeq2.
+- **Run Name Validation:** Added early validation in the wrapper and Snakefile when `run_name` is missing, empty, or mismatched with the run directory, reporting a clear error message instead of failing later on wrong paths.
+- **Heatmap Formatting:** Fixed `heatmap_condition_vst.pdf` file naming and A4 page sizing to match the other heatmaps.
+- **Volcano Plots Options:** Fixed the Log2FC option handling on volcano plots while keeping raw log2FC values in result tables and matrices.
+- **Contrast Standardization:** Standardized differential expression contrasts to `treated vs reference` orientation and updated downstream output labels.
+
+### Known Issues
+- **MultiQC Coverage:** Currently limited to `Picard` metrics; `FastQC`, `fastp`, and `featureCounts` integration is planned for `v1.2.0`
 
 ---
 
@@ -43,7 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec(v2.0.0
 
 ---
 
-## [1.0.0] - 2026/07/25
+## [1.0.0] - 2026-07-25
 
 ### Added
 - Initial release of DETECT pipeline.
