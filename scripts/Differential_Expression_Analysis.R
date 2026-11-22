@@ -1,20 +1,24 @@
-# Differential Expression Analysis
-
+# ------------------------------------------------------------------------------
+# DETECT - Differential Expression Analysis Script
+# Version: 1.0.0
+# Description: Automated execution of DESeq2 workflow.
+# ------------------------------------------------------------------------------
 
 # LIBRARIES --------------------------------------------------------------------
-library(yaml)
-library(cli)
-library(BiocParallel)    # required for parallelization
-library(ggplot2)
-library(DESeq2)
-library(MASS)
-library(ashr)
-library(writexl)
-library(dynamicTreeCut)
-library(dplyr)
-library(pheatmap)
+library(yaml)              # Configuration file reader
+library(cli)               # Formatted terminal messaging and logs
+library(BiocParallel)      # Parallelization for Bioconductor
+library(ggplot2)           # Data visualization and plotting
+library(DESeq2)            # Differential expression analysis
+library(MASS)              # Modern applied statistics functions
+library(ashr)              # Shrinkage estimation for log2 fold changes
+library(writexl)           # Output excel table writing
+library(dynamicTreeCut)    # Hierarchical cluster cutting
+library(dplyr)             # Data frame manipulation
+library(pheatmap)          # Heatmap visualization
 
 # FUNCTION DEFINITION ----------------------------------------------------------
+# Function to generate Volcano Plot
 plot_volcano <- function(res, title, padj_cutoff = 0.05, lfc_cutoff = 1) {
   df <- as.data.frame(res)
   df$GeneID <- rownames(df)
@@ -24,11 +28,12 @@ plot_volcano <- function(res, title, padj_cutoff = 0.05, lfc_cutoff = 1) {
   
   df$negLog10Padj <- -log10(df$padj)
   
-  # Classification
+  # Classification o genes based on statistical significance
   df$Status <- "Not significant"
   df$Status[df$padj <= padj_cutoff & df$log2FoldChange >= lfc_cutoff] <- "Significant_up"
   df$Status[df$padj <= padj_cutoff & df$log2FoldChange <= -lfc_cutoff] <- "Significant_down"
   
+  # Generation of ggplot2 volcano objects
   p <- ggplot(df, aes(x = log2FoldChange, y = negLog10Padj)) +
     geom_point(aes(color = Status), alpha = 0.6, size = 1.5) +
     scale_color_manual(values = c("grey70", "blue", "red")) +
@@ -47,7 +52,7 @@ plot_volcano <- function(res, title, padj_cutoff = 0.05, lfc_cutoff = 1) {
   return(p)
 }
 
-# Definition of function required to check outputs
+# Function required to check outputs
 check_output <- function(file_path) {
   if (file.exists(file_path)) {
     cli_alert_success(
@@ -91,14 +96,14 @@ if (.Platform$OS.type == "unix") {                         # Enable the use of m
 
 output_dir <- paste0("runs/", config$run_name, "/", config$output_dir, "/DIFF_EXPR/")
 attribute <- config$featurecounts$attribute
-geature_type <- config$featurecounts$feature_type
+feature_type <- config$featurecounts$feature_type
 padj_cutoff <- config$de_analysis$padj_cutoff
 lfc_cutoff <- config$de_analysis$lfc_cutoff
 reference_condition <- config$reference_condition
 cli_inform("DEG filtering thresholds:")
 cli_inform(paste0("  padj <= ", padj_cutoff))
 cli_inform(paste0("  |log2FC| >= ", lfc_cutoff))
-cli_inform("Reference condition set to: ", reference_condition)
+cli_inform("Reference condition set to: {reference_condition}")
 
 # INPUT DATA -------------------------------------------------------------------
 
@@ -120,20 +125,16 @@ if(is.null(reference_condition) || reference_condition == "") {
 }
 
 if (!reference_condition %in% levels(metadata$CONDITION)) {
-  
-  cli_alert_danger(paste(
-    "ERROR: reference_condition = ", reference_condition,
-    "not found in metadata$CONDITION.\n",
-    "",
-    paste0("Available levels: ", paste(levels(metadata$CONDITION), collapse = ", ")),
-    "\n A diagnostic file has been generated:\n",
-    paste0(output_dir, "debug(factor_levels_used.csv\n\n"),
-    "Fix: update config.yaml at line 6 or check metadata$CONDITION spelling"
-  ))
+  diag_file <- paste0(output_dir, "debug/factor_levels_used.csv")
+  cli_abort(c(
+      "reference_condition {.val {reference_condition}} not found in metadata$CONDITION.",
+    "i" = "Available levels: {.val {levels(metadata$CONDITION)}}",
+    "i" = "A diagnostic file has been generated: {.val {diag_file}}",
+    "x" = "Fix: update reference_condition in config.yaml or check the spelling of CONDITION in metadata.tsv"))
 }
 
 metadata$CONDITION <- relevel(metadata$CONDITION, ref = reference_condition)
-cli_inform("Using reference condition: ", reference_condition)
+cli_inform("Using reference condition: {reference_condition}")
 cli_inform("Factor levels after relevel: ")
 print(levels(metadata$CONDITION))
 
@@ -225,20 +226,20 @@ comparisons <- combn(condition_levels, 2, simplify = FALSE)    # Obtaining combi
 results_list <- list()
 
 if (config$de_analysis$lfc_source == "shrunk") {
-  cli_inform("INFO: shrinkage is used")
+  cli_inform("INFO: shrunken log2FC (ashr) are used for volcano plots only; tables use raw log2FC")
 }
 
 for (comp in comparisons) {
   group1 <- comp[1]
   group2 <- comp[2]
   
-  comp_name <- paste(group1, "VS", group2, sep = "_")
+  comp_name <- paste(group2, "VS", group1, sep = "_")
   
   cli_inform("Running: {comp_name}")
   
   # Raw results
   
-  res <- results(dds_fit, contrast = c("CONDITION", group1, group2))
+  res <- results(dds_fit, contrast = c("CONDITION", group2, group1))
   results_list[[comp_name]] <- res
 }
 
@@ -332,9 +333,9 @@ for (comp_name in names(results_list)) {
   
   # Select LFC source for plotting 
   if (config$de_analysis$lfc_source == "shrunk") {
-    res_plot <- results_list[[comp_name]]
-  } else {
     res_plot <- get_shrunk_results(dds_fit, group1, group2)
+  } else {
+    res_plot <- results_list[[comp_name]]
   }
   
   # Create volcano plot
@@ -344,8 +345,10 @@ for (comp_name in names(results_list)) {
                           lfc_cutoff = lfc_cutoff)
   volcano_plots[[comp_name]] <- volcano
   
-  ggsave(paste0(output_dir, "plots/volcano", comp_name, ".pdf"), width = 210, height = 297, units = "mm")
-  check_output(paste0(output_dir, "plots/volcano", comp_name, ".pdf"))
+  volcano_file <- paste0(output_dir, "plots/volcano_plots/volcano_", comp_name, ".pdf")
+  
+  ggsave(volcano_file, plot = volcano, width = 210, height = 297, units = "mm")
+  check_output(volcano_file)
 }
 
 # CLUSTERING -------------------------------------------------------------------
@@ -490,7 +493,7 @@ vsdata_condition <- as.matrix(vsdata_condition)
 vsdata_condition <- vsdata_condition[gene_order,, drop = FALSE]
 
 ## Heatmap
-pdf(paste0(output_dir, "plots/heatmap_conditions_vst.pdf", width = 8.27, height = 11.69))
+pdf(paste0(output_dir, "plots/heatmap_conditions_vst.pdf"), width = 8.27, height = 11.69)
 
 pheatmap(vsdata_condition, cluster_rows = FALSE,
          cluster_cols = FALSE,
