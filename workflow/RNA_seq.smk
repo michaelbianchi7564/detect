@@ -19,15 +19,17 @@ from scripts.utils import (                                                     
 
 configfile: "config.yaml"
 
-if "run_name" not in config:
+RUN_NAME = str(config.get("run_name") or "").strip()
+if not RUN_NAME:
     raise ValueError(
-        "\n\n[ERROR] 'run_name' parameter is not defined.\n"
+        "\n\n[ERROR] 'run_name' is empty or not defined.\n"
         "Do not run the snakemake file directly, use the wrapper script instead:\n"
-        "./run_pipeline.sh {RUN} n_cores\n")
+        "./run_pipeline.sh <RUN> n_cores\n")
+config["run_name"] = RUN_NAME
 
 validate_config(config['featurecounts'])
 
-RUN_DIR = f"runs/{config['run_name']}"
+RUN_DIR = f"runs/{RUN_NAME}"
 INPUT_DIR = f"{RUN_DIR}/{config['input_dir']}"
 OUTPUT_DIR = f"{RUN_DIR}/{config['output_dir']}"
 DIFF_EXPR_DIR = f"{OUTPUT_DIR}/DIFF_EXPR"
